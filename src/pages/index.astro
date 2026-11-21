@@ -9,7 +9,6 @@ import Team from '@/components/sections/Team.astro';
 import FAQ from '@/components/sections/FAQ.astro';
 import Contact from '@/components/sections/Contact.astro';
 import Footer from '@/components/sections/Footer.astro';
-import HeroScene from '@/components/three/HeroScene';
 import { site } from '@/data/site';
 ---
 
@@ -29,7 +28,7 @@ import { site } from '@/data/site';
         <a href="#services" class="rounded-full border border-border px-6 py-3 font-medium transition-colors hover:border-fg">Our services</a>
       </div>
       <div class="hero-scene mx-auto -mt-2 h-[34vh] min-h-[260px] max-w-7xl sm:h-[50vh]">
-        <HeroScene client:only="react" />
+        <div id="hero-3d" class="size-full"></div>
       </div>
     </section>
     <Services />
@@ -42,6 +41,19 @@ import { site } from '@/data/site';
   </main>
   <Footer />
 </Base>
+
+<script>
+  // Load the 3D scene only once the page is interactive, so text and buttons come first.
+  const host = document.getElementById('hero-3d');
+  if (host) {
+    const load = () =>
+      import('@/scripts/hero3d').then(({ mount }) => {
+        mount(host);
+        host.classList.add('animate-[fade-in_0.9s_ease-out]');
+      });
+    'requestIdleCallback' in window ? requestIdleCallback(load, { timeout: 2500 }) : setTimeout(load, 1200);
+  }
+</script>
 
 <script>
   import { gsap, SplitText, prefersReducedMotion } from '@/lib/motion';
