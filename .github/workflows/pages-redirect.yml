@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  actions: read # lets deploy-pages read the uploaded artifact's metadata
   pages: write
   id-token: write
 
