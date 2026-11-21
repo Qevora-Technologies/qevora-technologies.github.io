@@ -1,0 +1,51 @@
+# qevora-technologies.github.io can't have Pages disabled (it's the org's Pages repo),
+# so it publishes a tiny redirect to the real site on Vercel. Old links keep working.
+name: GitHub Pages → Vercel redirect
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pages-redirect.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  redirect:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Build redirect page
+        run: |
+          mkdir -p _site
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8" />
+              <title>Qevora-Tech | Innovation Starts Here</title>
+              <meta name="robots" content="noindex" />
+              <link rel="canonical" href="https://qevora-tech.vercel.app/" />
+              <meta http-equiv="refresh" content="0; url=https://qevora-tech.vercel.app/" />
+              <script>location.replace('https://qevora-tech.vercel.app' + location.pathname + location.search + location.hash);</script>
+            </head>
+            <body>
+              <p>QevoraTech has moved to <a href="https://qevora-tech.vercel.app/">qevora-tech.vercel.app</a>.</p>
+            </body>
+          </html>
+          HTML
+          cp _site/index.html _site/404.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
