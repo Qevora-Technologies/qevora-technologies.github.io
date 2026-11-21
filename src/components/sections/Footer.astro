@@ -1,0 +1,23 @@
+---
+import Logo from '@/components/Logo.astro';
+import { site } from '@/data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-border px-4 py-14 sm:px-6">
+  <div class="mx-auto flex max-w-6xl flex-col gap-10 md:flex-row md:items-start md:justify-between">
+    <div class="max-w-xs">
+      <Logo />
+      <p class="mt-4 text-sm text-muted">Software, AI, cloud and security for startups — by one senior team.</p>
+    </div>
+    <nav aria-label="Footer" class="grid grid-cols-2 gap-x-16 gap-y-3 text-sm">
+      {site.nav.map((l) => <a href={l.href} class="text-muted hover:text-fg">{l.label}</a>)}
+      <a href="#contact" class="text-muted hover:text-fg">Contact</a>
+      {site.socials.map((s) => <a href={s.href} target="_blank" rel="noopener" class="text-muted hover:text-fg">{s.label}</a>)}
+    </nav>
+  </div>
+  <div class="mx-auto mt-12 flex max-w-6xl flex-col justify-between gap-2 border-t border-border pt-6 text-sm text-muted sm:flex-row">
+    <p>© {year} {site.legalName}. All rights reserved.</p>
+    <a href={`mailto:${site.email}`} class="hover:text-fg">{site.email}</a>
+  </div>
+</footer>

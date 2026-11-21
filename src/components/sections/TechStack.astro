@@ -1,0 +1,83 @@
+---
+/**
+ * Tech stack as three scrolling rows (left → right), one per category.
+ * Black logos + names. Pauses on hover; static wrap for reduced motion.
+ */
+import SectionHeading from '@/components/SectionHeading.astro';
+import { stack } from '@/data/stack';
+const CLOUD = 'M6.5 20A5.5 5.5 0 0 1 5.6 9.07 7 7 0 0 1 18.86 8.6 5.75 5.75 0 0 1 17.75 20Z';
+// Each row gets a slightly different speed so they don't move in lockstep.
+const durations = [38, 52, 60];
+---
+
+<section id="stack" class="py-24 lg:py-32">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <SectionHeading
+      eyebrow="Tech stack"
+      title="Proven tools, no experiments on your budget"
+      intro="We pick the right tool for your product — from the languages we write to the platforms we deploy on."
+    />
+  </div>
+
+  <div class="space-y-10">
+    {
+      stack.map((group, gi) => {
+        // Repeat items so one copy is always wider than the screen, then duplicate for a seamless loop.
+        const copies = Math.max(2, Math.ceil(16 / group.items.length));
+        const run = Array.from({ length: copies }, () => group.items).flat();
+        return (
+          <div data-reveal>
+            <h3 class="mx-auto mb-4 max-w-6xl px-4 font-display text-2xl font-semibold text-black sm:px-6">{group.title}</h3>
+            <div class="marquee group relative overflow-hidden border-y border-border py-5 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+              <div class="marquee-track flex w-max group-hover:[animation-play-state:paused]" style={`--duration:${durations[gi % durations.length]}s`}>
+                {[0, 1].map((copy) => (
+                  <ul class="flex shrink-0 items-center" aria-hidden={copy === 1 ? 'true' : undefined}>
+                    {run.map((item) => (
+                      <li class="flex shrink-0 items-center gap-3 px-7 text-black">
+                        <svg viewBox="0 0 24 24" class="size-7 shrink-0" fill="currentColor" aria-hidden="true">
+                          <path d={item.path ?? CLOUD} />
+                        </svg>
+                        <span class="text-lg font-semibold whitespace-nowrap">{item.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })
+    }
+  </div>
+</section>
+
+<style>
+  /* Left → right: start shifted one copy to the left, slide back to 0, loop. */
+  .marquee-track {
+    animation: marquee-ltr var(--duration) linear infinite;
+  }
+  @keyframes marquee-ltr {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+      width: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .marquee-track > ul + ul {
+      display: none;
+    }
+    .marquee-track > ul {
+      flex-wrap: wrap;
+      justify-content: center;
+      row-gap: 1rem;
+    }
+  }
+</style>

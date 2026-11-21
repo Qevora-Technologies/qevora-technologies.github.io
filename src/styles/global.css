@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/syne';
+@import '@fontsource-variable/plus-jakarta-sans';
+@import '@fontsource-variable/jetbrains-mono';
+@import 'lenis/dist/lenis.css';
+
+/*
+ * Design tokens. Every component uses these, never raw hex.
+ * Background is WHITE — permanent brand decision.
+ * Other colours are NEUTRAL PLACEHOLDERS until the final palette is chosen.
+ */
+@theme {
+  --font-display: 'Syne Variable', sans-serif;
+  --font-sans: 'Plus Jakarta Sans Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', monospace;
+
+  --color-bg: #ffffff; /* page background — permanent */
+  --color-surface: #f7f7f8; /* cards, alternating sections (placeholder) */
+  --color-border: #e4e4e7; /* borders, dividers (placeholder) */
+  --color-fg: #18181b; /* headings + body text (placeholder) */
+  --color-muted: #52525b; /* secondary text (placeholder) */
+  --color-accent: #18181b; /* CTAs, links (placeholder) */
+  --color-accent-hover: #3f3f46; /* hover state of accent (placeholder) */
+
+  /* Mint — contact panel. Dark ink on mint = 8.0:1+ contrast. */
+  --color-mint: #86cb92;
+  --color-mint-soft: #e7f5ea;
+  --color-mint-ink: #12301c;
+}
+
+html {
+  scroll-padding-top: 5.5rem;
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}

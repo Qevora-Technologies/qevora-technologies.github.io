@@ -1,0 +1,55 @@
+---
+import Base from '@/layouts/Base.astro';
+import Navbar from '@/components/sections/Navbar.astro';
+import Services from '@/components/sections/Services.astro';
+import WhyUs from '@/components/sections/WhyUs.astro';
+import TechStack from '@/components/sections/TechStack.astro';
+import Process from '@/components/sections/Process.astro';
+import Team from '@/components/sections/Team.astro';
+import FAQ from '@/components/sections/FAQ.astro';
+import Contact from '@/components/sections/Contact.astro';
+import Footer from '@/components/sections/Footer.astro';
+import TechLogos3D from '@/components/three/TechLogos3D';
+import { site } from '@/data/site';
+---
+
+<Base>
+  <Navbar />
+  <main id="top">
+    <section class="relative overflow-hidden bg-bg px-4 pt-32 text-center sm:pt-40">
+      <p class="hero-sub font-mono text-sm tracking-widest text-muted uppercase">{site.tagline}</p>
+      <h1 class="hero-title mx-auto mt-4 max-w-4xl font-display text-4xl font-bold tracking-tight sm:text-6xl md:text-7xl">
+        We build the tech behind your startup
+      </h1>
+      <p class="hero-sub mx-auto mt-5 max-w-xl text-lg text-muted">
+        AI, web, mobile, cloud and security — designed, built and secured by one senior team.
+      </p>
+      <div class="hero-cta mt-8 flex flex-wrap justify-center gap-3">
+        <a href="#contact" class="rounded-full bg-accent px-6 py-3 font-medium text-bg transition-colors hover:bg-accent-hover">Get a quote</a>
+        <a href="#services" class="rounded-full border border-border px-6 py-3 font-medium transition-colors hover:border-fg">Our services</a>
+      </div>
+      <div class="hero-scene mx-auto -mt-2 h-[34vh] min-h-[260px] max-w-7xl sm:h-[50vh]">
+        <TechLogos3D client:only="react" />
+      </div>
+    </section>
+    <Services />
+    <TechStack />
+    <div class="bg-surface"><WhyUs /></div>
+    <div class="bg-bg"><Process /></div>
+    <div class="bg-surface"><Team /></div>
+    <FAQ />
+    <Contact />
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  import { gsap, SplitText, prefersReducedMotion } from '@/lib/motion';
+  if (!prefersReducedMotion()) {
+    const split = SplitText.create('.hero-title', { type: 'words,chars', mask: 'words' });
+    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+    tl.from(split.chars, { yPercent: 110, stagger: 0.015, duration: 0.9 })
+      .from('.hero-sub, .hero-cta', { y: 16, opacity: 0, stagger: 0.1, duration: 0.7 }, '-=0.6')
+      .from('.hero-scene', { y: 40, opacity: 0, duration: 1.2 }, '-=0.5');
+  }
+</script>

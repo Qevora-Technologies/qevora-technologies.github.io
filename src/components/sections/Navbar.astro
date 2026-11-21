@@ -1,0 +1,51 @@
+---
+import Logo from '@/components/Logo.astro';
+import { site } from '@/data/site';
+---
+
+<header class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-300" id="navbar">
+  <nav class="mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-6" aria-label="Main">
+    <a href="#top" aria-label="QevoraTech home"><Logo /></a>
+
+    <ul class="hidden items-center gap-8 md:flex">
+      {site.nav.map((l) => <li><a href={l.href} class="text-sm font-medium text-muted transition-colors hover:text-fg">{l.label}</a></li>)}
+    </ul>
+
+    <div class="flex items-center gap-3">
+      <a href="#contact" class="hidden rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-bg transition-colors hover:bg-accent-hover sm:inline-flex">Get a quote</a>
+      <button id="nav-toggle" class="grid size-10 place-items-center rounded-full border border-border md:hidden" aria-expanded="false" aria-controls="nav-mobile" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h16M4 16h16"></path></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div id="nav-mobile" class="hidden border-t border-border bg-bg px-4 pb-6 md:hidden">
+    <ul class="flex flex-col py-2">
+      {site.nav.map((l) => <li><a href={l.href} class="block py-3 text-lg font-medium">{l.label}</a></li>)}
+    </ul>
+    <a href="#contact" class="flex justify-center rounded-full bg-accent px-5 py-3 font-medium text-bg">Get a quote</a>
+  </div>
+</header>
+
+<script>
+  function setup() {
+    const header = document.getElementById('navbar')!;
+    const toggle = document.getElementById('nav-toggle')!;
+    const menu = document.getElementById('nav-mobile')!;
+    const onScroll = () => {
+      const scrolled = window.scrollY > 8;
+      header.classList.toggle('bg-bg/85', scrolled);
+      header.classList.toggle('backdrop-blur-md', scrolled);
+      header.classList.toggle('border-border', scrolled);
+    };
+    const close = () => { menu.classList.add('hidden'); toggle.setAttribute('aria-expanded', 'false'); };
+    toggle.addEventListener('click', () => {
+      const open = menu.classList.toggle('hidden') === false;
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+  setup();
+</script>

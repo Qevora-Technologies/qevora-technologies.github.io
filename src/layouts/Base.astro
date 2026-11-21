@@ -1,0 +1,37 @@
+---
+import '@/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'Qevora-Tech | Innovation Starts Here',
+  description = 'Next-generation IT agency delivering bespoke AI solutions, cloud DevOps, full-stack web and mobile apps, and digital growth systems.',
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body class="min-h-dvh">
+    <slot />
+    <script>
+      import { initSmoothScroll, initReveals } from '@/lib/motion';
+      initSmoothScroll();
+      initReveals();
+    </script>
+  </body>
+</html>

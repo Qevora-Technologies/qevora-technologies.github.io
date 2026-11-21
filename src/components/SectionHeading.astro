@@ -1,0 +1,10 @@
+---
+interface Props { eyebrow: string; title: string; intro?: string; center?: boolean }
+const { eyebrow, title, intro, center = false } = Astro.props;
+---
+
+<header class:list={['mb-14 max-w-2xl', center && 'mx-auto text-center']} data-reveal>
+  <p class="mb-3 font-mono text-sm tracking-widest text-muted uppercase">{eyebrow}</p>
+  <h2 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">{title}</h2>
+  {intro && <p class="mt-4 text-lg text-muted">{intro}</p>}
+</header>

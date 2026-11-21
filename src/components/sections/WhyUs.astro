@@ -1,0 +1,28 @@
+---
+import { CalendarCheck, FileCheck2, KeyRound, LifeBuoy } from 'lucide-react';
+import SectionHeading from '@/components/SectionHeading.astro';
+
+const reasons = [
+  { Icon: FileCheck2, title: 'Clear, fixed quotes', text: 'You know the scope, timeline and price before we start. No surprise invoices.' },
+  { Icon: CalendarCheck, title: 'Weekly demos', text: 'See real, working progress every week — not just status reports.' },
+  { Icon: KeyRound, title: 'You own everything', text: 'Full source code, designs and IP are yours. No lock-in.' },
+  { Icon: LifeBuoy, title: 'Support after launch', text: '30-day warranty with free bug fixes, then optional maintenance plans.' },
+];
+---
+
+<section id="why" class="px-4 py-24 sm:px-6 lg:py-32">
+  <div class="mx-auto max-w-6xl">
+    <SectionHeading eyebrow="Why QevoraTech" title="Built for how startups actually work" />
+    <ul class="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        reasons.map(({ Icon, title, text }) => (
+          <li data-reveal>
+            <Icon size={28} strokeWidth={1.5} aria-hidden="true" />
+            <h3 class="mt-5 font-display text-lg font-semibold">{title}</h3>
+            <p class="mt-2 text-muted">{text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

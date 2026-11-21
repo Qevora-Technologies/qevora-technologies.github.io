@@ -1,19 +1,31 @@
-<div align="center">
+# QevoraTech website
 
-</div>
+Marketing site for **Qevora Technologies** — *Innovation Starts Here*.
 
-# Run and deploy Web app
+Built with [Astro](https://astro.build) (React islands), Tailwind CSS 4, GSAP + Lenis, and React Three Fiber. Deployed on Vercel.
 
-This contains everything you need to run your app locally.
+## Develop
 
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # type-check + production build
+```
 
-## Run Locally
+## Editing content
 
-**Prerequisites:**  Node.js
+| What | Where |
+|---|---|
+| Company details, nav, socials | `src/data/site.ts` |
+| Services | `src/data/services.ts` |
+| Tech stack rows | `src/data/stack.ts` |
+| Team members | `src/data/team.ts` |
+| Team photos | `src/assets/team/<member-id>.jpg` |
+| FAQ | `src/data/faq.ts` |
+| Colours & fonts | `src/styles/global.css` |
 
+## Environment
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+`PUBLIC_WEB3FORMS_KEY` — optional. With it, the contact form posts to Web3Forms; without it, the form opens the visitor's email app.
+
+`legacy/` holds the previous Vite site for reference only; it is not built.

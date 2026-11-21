@@ -1,0 +1,250 @@
+---
+/**
+ * Team — 3D coverflow carousel.
+ * Active card is centred and large; neighbours fan out with perspective,
+ * scale down and dim. Arrows, swipe/drag, keyboard, click-a-side-card,
+ * and autoplay (paused on hover/focus; off for reduced motion).
+ *
+ * PHOTOS: drop `src/assets/team/<member id>.jpg|png|webp` — see src/data/team.ts.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import { team } from '@/data/team';
+
+const photos = import.meta.glob<{ default: ImageMetadata }>('/src/assets/team/*.{jpg,jpeg,png,webp,avif}', {
+  eager: true,
+});
+const photoFor = (id: string) =>
+  Object.entries(photos).find(([path]) => path.split('/').pop()!.replace(/\.\w+$/, '') === id)?.[1].default;
+const initials = (name: string) =>
+  name.replace(/\./g, '').split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section id="team" class="overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
+  <div class="mx-auto max-w-6xl">
+    <SectionHeading
+      eyebrow="Team"
+      title="The people building your product"
+      intro="A small senior team. You talk directly to the engineers and designers doing the work — no layers in between."
+    />
+  </div>
+
+  <div
+    id="team-carousel"
+    class="relative mx-auto max-w-6xl select-none"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Team members"
+    tabindex="0"
+  >
+    <ul class="team-stage relative mx-auto h-[400px] sm:h-[470px]" style="perspective: 1400px;">
+      {
+        team.map((m, i) => {
+          const photo = photoFor(m.id);
+          return (
+            <li
+              class="team-card absolute top-1/2 left-1/2 h-[360px] w-[260px] cursor-pointer sm:h-[440px] sm:w-[330px]"
+              data-index={i}
+              aria-roledescription="slide"
+              aria-label={`${i + 1} of ${team.length}: ${m.name}, ${m.role}`}
+            >
+              <article class="card-inner relative size-full overflow-hidden rounded-3xl border-2 border-transparent bg-surface shadow-[0_30px_60px_-30px_rgb(0_0_0/0.45)] transition-[border-color] duration-500">
+                {photo ? (
+                  <Image
+                    src={photo}
+                    alt={`${m.name}, ${m.role}`}
+                    widths={[330, 500, 660]}
+                    sizes="330px"
+                    class="absolute inset-0 size-full object-cover object-[50%_12%]"
+                    draggable="false"
+                  />
+                ) : (
+                  <div class="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_30%_20%,#ffffff,var(--color-surface))] pb-28" aria-hidden="true">
+                    <span class="font-display text-8xl font-bold text-fg/20">{initials(m.name)}</span>
+                  </div>
+                )}
+                <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/85 via-black/55 to-transparent px-6 pt-24 pb-6 text-white">
+                  <h3 class="font-display text-2xl font-semibold">{m.name}</h3>
+                  <p class="mt-1 text-sm font-medium text-white/80">{m.role}</p>
+                  <ul class="card-skills mt-4 flex flex-wrap gap-1.5">
+                    {m.skills.map((s) => (
+                      <li class="rounded-full border border-white/25 bg-white/10 px-2.5 py-1 font-mono text-[11px] backdrop-blur-sm">{s}</li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            </li>
+          );
+        })
+      }
+    </ul>
+
+    <div class="mt-8 flex items-center justify-center gap-6">
+      <button
+        type="button"
+        data-dir="-1"
+        class="team-nav grid size-12 place-items-center rounded-full border border-border bg-bg transition-colors hover:border-fg"
+        aria-label="Previous team member"
+      >
+        <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+      </button>
+      <p class="min-w-20 text-center font-mono text-sm tracking-widest" aria-live="polite">
+        <span id="team-current" class="text-fg">01</span><span class="text-muted"> / {pad(team.length)}</span>
+      </p>
+      <button
+        type="button"
+        data-dir="1"
+        class="team-nav grid size-12 place-items-center rounded-full border border-border bg-bg transition-colors hover:border-fg"
+        aria-label="Next team member"
+      >
+        <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .team-card {
+    transform-style: preserve-3d;
+    transition:
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.7s ease,
+      filter 0.7s ease;
+    will-change: transform;
+  }
+  .team-card .card-skills {
+    transition: opacity 0.4s ease;
+  }
+  .team-card:not(.is-active) .card-skills {
+    opacity: 0;
+  }
+  .team-card.is-active .card-inner {
+    border-color: var(--color-accent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .team-card {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function setup() {
+    const root = document.getElementById('team-carousel');
+    if (!root) return;
+    const cards = [...root.querySelectorAll<HTMLElement>('.team-card')];
+    const counter = document.getElementById('team-current')!;
+    const n = cards.length;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let active = 0;
+    let timer: number | undefined;
+    const HALF = 350; // half of the 0.7s card transition
+    const lastD = new Map<HTMLElement, number>();
+    const zTimers = new Map<HTMLElement, number>();
+
+    const render = () => {
+      const narrow = window.innerWidth < 640;
+      const step = narrow ? 120 : 210; // horizontal distance between neighbours
+      cards.forEach((card, i) => {
+        // Signed circular distance from the active card: -2 … 2 for 5 cards.
+        let d = (i - active + n) % n;
+        if (d > n / 2) d -= n;
+        const abs = Math.abs(d);
+        const hidden = abs > (narrow ? 1 : 2);
+        const x = d * step - Math.sign(d) * (abs > 1 ? step * 0.25 * (abs - 1) : 0);
+        const scale = 1 - abs * 0.14;
+        const transform = `translate(-50%, -50%) translateX(${x}px) translateZ(${-abs * 140}px) rotateY(${-d * 24}deg) scale(${scale})`;
+
+        // A card that wraps from one end to the other would otherwise fly across
+        // the middle. Instead: hide it, jump it to its new slot, then fade it in.
+        const prevD = lastD.get(card);
+        const wraps = prevD !== undefined && Math.abs(d - prevD) > 1;
+        lastD.set(card, d);
+        if (wraps && !reduced) {
+          card.style.transition = 'none';
+          card.style.opacity = '0';
+          card.style.transform = transform;
+          void card.offsetWidth; // commit the jump before re-enabling transitions
+          card.style.transition = '';
+        } else {
+          card.style.transform = transform;
+        }
+
+        // Stacking: a card coming forward goes on top immediately; a card moving
+        // back keeps its place until halfway, so nothing pops in front mid-move.
+        const z = 100 - abs;
+        window.clearTimeout(zTimers.get(card));
+        if (z >= Number(card.style.zIndex || 0) || reduced) card.style.zIndex = String(z);
+        else zTimers.set(card, window.setTimeout(() => (card.style.zIndex = String(z)), HALF));
+
+        // Solid cards (no see-through text on white); depth comes from shading + blur.
+        card.style.opacity = hidden ? '0' : '1';
+        card.style.filter = abs ? `brightness(${1 - abs * 0.07}) saturate(${1 - abs * 0.35}) blur(${(abs - 1) * 1.2}px)` : 'none';
+        card.style.pointerEvents = hidden ? 'none' : 'auto';
+        card.classList.toggle('is-active', d === 0);
+        card.setAttribute('aria-hidden', String(d !== 0));
+      });
+      counter.textContent = String(active + 1).padStart(2, '0');
+    };
+
+    const go = (to: number) => {
+      active = ((to % n) + n) % n;
+      render();
+    };
+    const next = () => go(active + 1);
+    const prev = () => go(active - 1);
+
+    const stop = () => window.clearInterval(timer);
+    const start = () => {
+      if (reduced) return;
+      stop();
+      // Auto-advance every 3s, moving left → right (the card on the left slides into the centre).
+      timer = window.setInterval(prev, 3000);
+    };
+
+    root.querySelectorAll<HTMLButtonElement>('.team-nav').forEach((b) =>
+      b.addEventListener('click', () => {
+        go(active + Number(b.dataset.dir));
+        start();
+      }),
+    );
+    cards.forEach((card, i) =>
+      card.addEventListener('click', () => {
+        if (i !== active) {
+          go(i);
+          start();
+        }
+      }),
+    );
+    root.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { next(); start(); }
+      if (e.key === 'ArrowLeft') { prev(); start(); }
+    });
+
+    // Swipe / drag
+    let downX: number | null = null;
+    root.addEventListener('pointerdown', (e) => (downX = e.clientX));
+    root.addEventListener('pointerup', (e) => {
+      if (downX === null) return;
+      const dx = e.clientX - downX;
+      downX = null;
+      if (Math.abs(dx) > 40) {
+        dx < 0 ? next() : prev();
+        start();
+      }
+    });
+
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', start);
+    // Only autoplay while the section is on screen.
+    new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop())).observe(root);
+    window.addEventListener('resize', render);
+
+    render();
+  }
+  setup();
+</script>
