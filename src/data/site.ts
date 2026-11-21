@@ -4,7 +4,7 @@ export const site = {
   legalName: 'Qevora Technologies',
   tagline: 'Innovation starts here.',
   email: 'qevoratechnologies@gmail.com',
-  location: 'Airline Society, Lahore, Pakistan',
+  location: 'Al Hamra Town, Lahore, Pakistan',
   socials: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/qevora-technologies/' },
     { label: 'Instagram', href: 'https://www.instagram.com/qevoratechnologies' },
