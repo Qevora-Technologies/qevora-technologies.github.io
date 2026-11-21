@@ -70,7 +70,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
                   <p class="mt-1 text-sm font-medium text-white/80">{m.role}</p>
                   <ul class="card-skills mt-4 flex flex-wrap gap-1.5">
                     {m.skills.map((s) => (
-                      <li class="rounded-full border border-white/25 bg-white/10 px-2.5 py-1 font-mono text-[11px] backdrop-blur-sm">{s}</li>
+                      <li class="rounded-full border border-white/25 bg-black/30 px-2.5 py-1 font-mono text-[11px]">{s}</li>
                     ))}
                   </ul>
                 </div>
@@ -113,6 +113,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
       opacity 0.7s ease,
       filter 0.7s ease;
     will-change: transform;
+    backface-visibility: hidden;
   }
   .team-card .card-skills {
     transition: opacity 0.4s ease;
@@ -181,7 +182,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
         // Solid cards (no see-through text on white); depth comes from shading + blur.
         card.style.opacity = hidden ? '0' : '1';
-        card.style.filter = abs ? `brightness(${1 - abs * 0.07}) saturate(${1 - abs * 0.35}) blur(${(abs - 1) * 1.2}px)` : 'none';
+        // Phones skip filters entirely (re-filtering photos every frame of the slide is expensive).
+        card.style.filter = !abs || narrow ? 'none' : `brightness(${1 - abs * 0.07}) saturate(${1 - abs * 0.35}) blur(${(abs - 1) * 1.2}px)`;
         card.style.pointerEvents = hidden ? 'none' : 'auto';
         card.classList.toggle('is-active', d === 0);
         card.setAttribute('aria-hidden', String(d !== 0));

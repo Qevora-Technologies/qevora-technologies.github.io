@@ -7,7 +7,7 @@
  * - No network: lighting is built from in-scene Lightformers, not an HDR download.
  * - Reduced motion: renders a single static frame with all logos coloured.
  */
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, Environment, Float, Lightformer, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
@@ -44,6 +44,11 @@ const LAYOUT: [number, number, number, number, number][] = [
 ];
 
 const BASE_GREY = new THREE.Color('#d2d3da');
+
+/** Phones / touch devices get a lighter scene: fewer polygons, cheaper material, lower resolution. */
+const LITE =
+  typeof window !== 'undefined' &&
+  (window.matchMedia('(max-width: 767px)').matches || window.matchMedia('(pointer: coarse)').matches);
 const CYCLE = 6.5; // seconds per full wave loop
 const STEP = 0.16; // delay between neighbouring logos
 
@@ -68,8 +73,8 @@ const EXTRUDE: THREE.ExtrudeGeometryOptions = {
   bevelEnabled: true,
   bevelThickness: 0.7,
   bevelSize: 0.35,
-  bevelSegments: 5,
-  curveSegments: 28,
+  bevelSegments: LITE ? 2 : 5,
+  curveSegments: LITE ? 10 : 28,
 };
 
 /** Centre, flip SVG y-down → three y-up, and scale so the largest side equals `target` units. */
@@ -117,7 +122,7 @@ function LogoMesh({ logo, index, animate, spread }: { logo: Logo; index: number;
   const geometry = useMemo(() => extrudeSvgPath(logo.path), [logo.path]);
   const brand = useMemo(() => new THREE.Color(logo.hex), [logo.hex]);
   const mesh = useRef<THREE.Mesh>(null);
-  const mat = useRef<THREE.MeshPhysicalMaterial>(null);
+  const mat = useRef<THREE.MeshStandardMaterial>(null);
   const [x, y, z, tilt, scale] = LAYOUT[index];
 
   useFrame(({ clock }) => {
@@ -132,16 +137,20 @@ function LogoMesh({ logo, index, animate, spread }: { logo: Logo; index: number;
 
   return (
     <Float enabled={animate} speed={1.2 + (index % 3) * 0.3} rotationIntensity={0.25} floatIntensity={0.5}>
-      <mesh ref={mesh} geometry={geometry} position={[x * spread, y, z]} rotation={[0, 0, tilt]} castShadow>
-        <meshPhysicalMaterial
-          ref={mat}
-          color={BASE_GREY}
-          roughness={0.16}
-          metalness={0.05}
-          clearcoat={1}
-          clearcoatRoughness={0.06}
-          envMapIntensity={1.35}
-        />
+      <mesh ref={mesh} geometry={geometry} position={[x * spread, y, z]} rotation={[0, 0, tilt]}>
+        {LITE ? (
+          <meshStandardMaterial ref={mat} color={BASE_GREY} roughness={0.22} metalness={0.05} envMapIntensity={1.35} />
+        ) : (
+          <meshPhysicalMaterial
+            ref={mat}
+            color={BASE_GREY}
+            roughness={0.16}
+            metalness={0.05}
+            clearcoat={1}
+            clearcoatRoughness={0.06}
+            envMapIntensity={1.35}
+          />
+        )}
       </mesh>
     </Float>
   );
@@ -151,7 +160,7 @@ function CentreTile({ ink }: { ink: string }) {
   const mark = useMemo(qevoraGeometry, []);
   return (
     <group position={[0, 0.05, 0.6]}>
-      <RoundedBox args={[1.8, 1.8, 0.42]} radius={0.38} smoothness={8} castShadow>
+      <RoundedBox args={[1.8, 1.8, 0.42]} radius={0.38} smoothness={LITE ? 4 : 8}>
         <meshPhysicalMaterial color={ink} roughness={0.22} clearcoat={1} clearcoatRoughness={0.1} envMapIntensity={0.8} />
       </RoundedBox>
       <mesh geometry={mark} position={[0, 0, 0.26]}>
@@ -179,15 +188,16 @@ function Scene({ animate, ink }: { animate: boolean; ink: string }) {
   return (
     <>
       <ambientLight intensity={0.6} />
-      <directionalLight position={[3, 6, 5]} intensity={1.6} castShadow />
+      <directionalLight position={[3, 6, 5]} intensity={1.6} />
       <group ref={group} scale={fit}>
         {LOGOS.map((logo, i) => (
           <LogoMesh key={logo.name} logo={logo} index={i} animate={animate} spread={spread} />
         ))}
         <CentreTile ink={ink} />
       </group>
-      <ContactShadows position={[0, -1.45, 0]} opacity={0.22} scale={16} blur={3} far={3} />
-      <Environment resolution={256}>
+      {/* Baked once (frames=1): re-rendering the shadow pass every frame was the biggest GPU cost. */}
+      <ContactShadows position={[0, -1.45, 0]} opacity={0.22} scale={16} blur={3} far={3} frames={1} resolution={LITE ? 256 : 512} />
+      <Environment resolution={LITE ? 64 : 256}>
         <Lightformer form="rect" intensity={2.5} position={[0, 5, 5]} rotation-x={-Math.PI / 3} scale={[12, 3, 1]} />
         <Lightformer form="rect" intensity={1.4} position={[-7, 1, 1]} rotation-y={Math.PI / 2} scale={[8, 3, 1]} />
         <Lightformer form="rect" intensity={1.4} position={[7, 1, 1]} rotation-y={-Math.PI / 2} scale={[8, 3, 1]} />
@@ -198,6 +208,14 @@ function Scene({ animate, ink }: { animate: boolean; ink: string }) {
 }
 
 export default function TechLogos3D() {
+  const wrap = useRef<HTMLDivElement>(null);
+  const [onScreen, setOnScreen] = useState(true);
+  useEffect(() => {
+    if (!wrap.current) return;
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting));
+    io.observe(wrap.current);
+    return () => io.disconnect();
+  }, []);
   const reduced =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ink =
@@ -206,16 +224,19 @@ export default function TechLogos3D() {
     '#18181b';
 
   return (
+    <div ref={wrap} className="size-full">
     <Canvas
       className="size-full"
-      dpr={[1, 1.75]}
-      frameloop={reduced ? 'demand' : 'always'}
+      dpr={LITE ? [1, 1.25] : [1, 1.75]}
+      // Stop rendering entirely once the hero is scrolled away.
+      frameloop={reduced ? 'demand' : onScreen ? 'always' : 'never'}
       camera={{ position: [0, 0.2, 9], fov: 32 }}
-      gl={{ antialias: true, alpha: true }}
+      gl={{ antialias: !LITE, alpha: true, powerPreference: 'high-performance' }}
       aria-label="3D tech stack: Python, PyTorch, React, Node.js, MongoDB, Docker, Kubernetes and cloud around the QevoraTech logo"
       role="img"
     >
       <Scene animate={!reduced} ink={ink} />
     </Canvas>
+    </div>
   );
 }

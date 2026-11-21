@@ -55,6 +55,10 @@ const durations = [38, 52, 60];
   /* Left → right: start shifted one copy to the left, slide back to 0, loop. */
   .marquee-track {
     animation: marquee-ltr var(--duration) linear infinite;
+    will-change: transform;
+  }
+  .marquee:not(.in-view) .marquee-track {
+    animation-play-state: paused;
   }
   @keyframes marquee-ltr {
     from {
@@ -81,3 +85,11 @@ const durations = [38, 52, 60];
     }
   }
 </style>
+
+<script>
+  // Only animate rows that are on screen.
+  const io = new IntersectionObserver((entries) =>
+    entries.forEach((e) => e.target.classList.toggle('in-view', e.isIntersecting)),
+  );
+  document.querySelectorAll('.marquee').forEach((m) => io.observe(m));
+</script>

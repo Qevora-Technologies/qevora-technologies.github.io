@@ -9,7 +9,7 @@ import Team from '@/components/sections/Team.astro';
 import FAQ from '@/components/sections/FAQ.astro';
 import Contact from '@/components/sections/Contact.astro';
 import Footer from '@/components/sections/Footer.astro';
-import TechLogos3D from '@/components/three/TechLogos3D';
+import HeroScene from '@/components/three/HeroScene';
 import { site } from '@/data/site';
 ---
 
@@ -29,7 +29,7 @@ import { site } from '@/data/site';
         <a href="#services" class="rounded-full border border-border px-6 py-3 font-medium transition-colors hover:border-fg">Our services</a>
       </div>
       <div class="hero-scene mx-auto -mt-2 h-[34vh] min-h-[260px] max-w-7xl sm:h-[50vh]">
-        <TechLogos3D client:only="react" />
+        <HeroScene client:only="react" />
       </div>
     </section>
     <Services />
@@ -49,7 +49,6 @@ import { site } from '@/data/site';
     const split = SplitText.create('.hero-title', { type: 'words,chars', mask: 'words' });
     const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
     tl.from(split.chars, { yPercent: 110, stagger: 0.015, duration: 0.9 })
-      .from('.hero-sub, .hero-cta', { y: 16, opacity: 0, stagger: 0.1, duration: 0.7 }, '-=0.6')
-      .from('.hero-scene', { y: 40, opacity: 0, duration: 1.2 }, '-=0.5');
+      .from('.hero-sub, .hero-cta', { y: 16, opacity: 0, stagger: 0.1, duration: 0.7 }, '-=0.6');
   }
 </script>

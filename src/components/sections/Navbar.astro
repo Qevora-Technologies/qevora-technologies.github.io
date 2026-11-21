@@ -34,8 +34,9 @@ import { site } from '@/data/site';
     const menu = document.getElementById('nav-mobile')!;
     const onScroll = () => {
       const scrolled = window.scrollY > 8;
-      header.classList.toggle('bg-bg/85', scrolled);
-      header.classList.toggle('backdrop-blur-md', scrolled);
+      header.classList.toggle('bg-bg/95', scrolled);
+      header.classList.toggle('md:bg-bg/85', scrolled);
+      header.classList.toggle('md:backdrop-blur-md', scrolled);
       header.classList.toggle('border-border', scrolled);
     };
     const close = () => { menu.classList.add('hidden'); toggle.setAttribute('aria-expanded', 'false'); };
@@ -44,7 +45,12 @@ import { site } from '@/data/site';
       toggle.setAttribute('aria-expanded', String(open));
     });
     menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
-    window.addEventListener('scroll', onScroll, { passive: true });
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { onScroll(); ticking = false; });
+    }, { passive: true });
     onScroll();
   }
   setup();
