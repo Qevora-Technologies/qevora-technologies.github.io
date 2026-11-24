@@ -5,6 +5,7 @@ export const site = {
   tagline: 'Innovation starts here.',
   email: 'qevoratechnologies@gmail.com',
   location: 'Al Hamra Town, Lahore, Pakistan',
+  whatsapp: { display: '+92 309 4844417', href: 'https://wa.me/923094844417' },
   /** Google Form for detailed project requests (3–5 min). */
   projectFormUrl: 'https://forms.gle/3K4hBk7BxQfgS6T99',
   socials: [
