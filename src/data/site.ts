@@ -5,6 +5,8 @@ export const site = {
   tagline: 'Innovation starts here.',
   email: 'qevoratechnologies@gmail.com',
   location: 'Al Hamra Town, Lahore, Pakistan',
+  /** Google Form for detailed project requests (3–5 min). */
+  projectFormUrl: 'https://forms.gle/3K4hBk7BxQfgS6T99',
   socials: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/company/qevora-technologies/' },
     { label: 'Instagram', href: 'https://www.instagram.com/qevoratechnologies' },

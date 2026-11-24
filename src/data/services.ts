@@ -1,9 +1,11 @@
 export interface Service {
   id: string;
-  icon: 'brain' | 'code' | 'smartphone' | 'cloud' | 'shield' | 'pen';
+  icon: 'brain' | 'code' | 'smartphone' | 'cloud' | 'shield' | 'pen' | 'cart';
   title: string;
   summary: string;
   includes: string[];
+  /** Offered by the whole team — shown as a full-width card. */
+  wholeTeam?: boolean;
 }
 
 export const services: Service[] = [
@@ -48,5 +50,18 @@ export const services: Service[] = [
     title: 'UI/UX Design',
     summary: 'Clear, modern interfaces your users understand on first use.',
     includes: ['User research & wireframes', 'Figma prototypes', 'Design systems'],
+  },
+  {
+    id: 'ecommerce',
+    icon: 'cart',
+    title: 'E-commerce & Marketing',
+    summary: 'Launch your online store and bring in buyers — on Etsy, Shopify or your own site.',
+    includes: [
+      'Etsy shop setup & management',
+      'Product listings & SEO',
+      'Shopify & custom online stores',
+      'Social media & ads marketing',
+    ],
+    wholeTeam: true,
   },
 ];

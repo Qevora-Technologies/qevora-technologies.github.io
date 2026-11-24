@@ -1,9 +1,9 @@
 ---
-import { Brain, Cloud, Code2, PenTool, ShieldCheck, Smartphone } from 'lucide-react';
+import { Brain, Cloud, Code2, PenTool, ShieldCheck, ShoppingCart, Smartphone } from 'lucide-react';
 import SectionHeading from '@/components/SectionHeading.astro';
 import { services } from '@/data/services';
 
-const icons = { brain: Brain, code: Code2, smartphone: Smartphone, cloud: Cloud, shield: ShieldCheck, pen: PenTool };
+const icons = { brain: Brain, code: Code2, smartphone: Smartphone, cloud: Cloud, shield: ShieldCheck, pen: PenTool, cart: ShoppingCart };
 ---
 
 <section id="services" class="bg-surface px-4 py-24 sm:px-6 lg:py-32">
@@ -11,12 +11,36 @@ const icons = { brain: Brain, code: Code2, smartphone: Smartphone, cloud: Cloud,
     <SectionHeading
       eyebrow="Services"
       title="Everything your startup needs to ship"
-      intro="One team for product, engineering, cloud and security — so nothing falls between vendors."
+      intro="One team for product, engineering, cloud, security and growth — so nothing falls between vendors."
     />
     <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {
         services.map((s) => {
           const Icon = icons[s.icon];
+          if (s.wholeTeam) {
+            return (
+              <li data-reveal class="group grid gap-8 rounded-2xl border border-border bg-bg p-7 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_-20px_rgb(0_0_0/0.25)] sm:col-span-2 lg:col-span-3 lg:grid-cols-[1fr_1.2fr] lg:items-center lg:p-9">
+                <div>
+                  <div class="mb-6 flex items-center gap-3">
+                    <span class="grid size-12 place-items-center rounded-xl bg-surface text-fg transition-colors group-hover:bg-accent group-hover:text-bg">
+                      <Icon size={22} strokeWidth={1.75} aria-hidden="true" />
+                    </span>
+                    <span class="rounded-full bg-mint px-3 py-1 text-xs font-medium text-mint-ink">Whole team</span>
+                  </div>
+                  <h3 class="font-display text-xl font-semibold">{s.title}</h3>
+                  <p class="mt-2 text-muted">{s.summary}</p>
+                </div>
+                <ul class="grid gap-x-6 gap-y-2 border-t border-border pt-5 text-sm sm:grid-cols-2 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
+                  {s.includes.map((i) => (
+                    <li class="flex gap-2.5">
+                      <span class="mt-2 size-1.5 shrink-0 rounded-full bg-fg/40" aria-hidden="true" />
+                      {i}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            );
+          }
           return (
             <li data-reveal class="group flex flex-col rounded-2xl border border-border bg-bg p-7 transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_-20px_rgb(0_0_0/0.25)]">
               <span class="mb-6 grid size-12 place-items-center rounded-xl bg-surface text-fg transition-colors group-hover:bg-accent group-hover:text-bg">
