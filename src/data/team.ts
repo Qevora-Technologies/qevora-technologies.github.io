@@ -20,4 +20,5 @@ export const team: TeamMember[] = [
   { id: 'saad-aziz', name: 'Rao Saad Aziz', role: 'AI/ML Engineer & UI/UX Designer', skills: ['Machine Learning', 'LLM Apps', 'UI/UX Design', 'E-commerce & Marketing'] },
   { id: 'muhammad-saad-malik', name: 'Muhammad Saad Malik', role: 'MERN Stack Developer', skills: ['MongoDB', 'Express & Node.js', 'React', 'E-commerce & Marketing'] },
   { id: 'haseeb-ahmed', name: 'Haseeb Ahmed', role: 'Project Manager', skills: ['Project Management', 'Agile Delivery', 'Client Success', 'E-commerce & Marketing'] },
+  { id: 'hamza-mustafa', name: 'Hamza Mustafa', role: 'Marketing, Creative & Cybersecurity', skills: ['E-commerce & Marketing', 'Video Editing', 'Figma', 'After Effects', 'Cybersecurity'] },
 ];
